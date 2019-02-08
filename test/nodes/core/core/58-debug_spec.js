@@ -457,7 +457,7 @@ describe('debug node', function() {
         helper.load(debugNode, flow, function() {
             var n1 = helper.getNode("n1");
             websocket_test(function() {
-                n1.emit("input", {payload: Buffer(501).fill("\"")});
+                n1.emit("input", {payload: Buffer.alloc(501).fill("\"")});
             }, function(msg) {
                 var a = JSON.parse(msg);
                 a[0].should.eql({
@@ -478,7 +478,7 @@ describe('debug node', function() {
         helper.load(debugNode, flow, function() {
             var n1 = helper.getNode("n1");
             websocket_test(function() {
-                n1.emit("input", {payload: {foo: Buffer(1001).fill("X")}});
+                n1.emit("input", {payload: {foo: Buffer.from(1001).fill("X")}});
             }, function(msg) {
                 var a = JSON.parse(msg);
                 a[0].should.eql({

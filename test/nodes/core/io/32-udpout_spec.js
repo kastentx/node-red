@@ -57,7 +57,7 @@ describe('UDP out Node', function() {
             var n1 = helper.getNode("n1");
             var msg = {};
             if(decode) {
-                msg.payload = Buffer("hello").toString('base64');
+                msg.payload = Buffer.from("hello").toString('base64');
             }
             else {
                 msg.payload = "hello";
@@ -72,15 +72,15 @@ describe('UDP out Node', function() {
     }
     
     it('should send IPv4 data', function(done) {
-        checkSend('udp4', 'hello', Buffer('hello'), false, false, done);
+        checkSend('udp4', 'hello', Buffer.from('hello'), false, false, done);
     });
 
     it('should send IPv4 data (base64)', function(done) {
-        checkSend('udp4', 'hello', Buffer('hello'), true, false, done);
+        checkSend('udp4', 'hello', Buffer.from('hello'), true, false, done);
     });
 
     it('should send IPv4 data with dest from msg', function(done) {
-        checkSend('udp4', 'hello', Buffer('hello'), false, true, done);
+        checkSend('udp4', 'hello', Buffer.from('hello'), false, true, done);
     });
 
 });

@@ -68,7 +68,7 @@ describe('UDP in Node', function() {
     }
     
     it('should recv IPv4 data (Buffer)', function(done) {
-        checkRecv('buffer', 'udp4', 'hello', Buffer('hello'), done);
+        checkRecv('buffer', 'udp4', 'hello', Buffer.from('hello'), done);
     });
 
     it('should recv IPv4 data (String)', function(done) {
@@ -76,11 +76,11 @@ describe('UDP in Node', function() {
     });
 
     it('should recv IPv4 data (base64)', function(done) {
-        checkRecv('base64', 'udp4', 'hello', Buffer('hello').toString('base64'), done);
+        checkRecv('base64', 'udp4', 'hello', Buffer.from('hello').toString('base64'), done);
     });
 
     it('should recv IPv6 data (Buffer)', function(done) {
-        checkRecv('buffer', 'udp6', 'hello', Buffer('hello'), done);
+        checkRecv('buffer', 'udp6', 'hello', Buffer.from('hello'), done);
     });
 
     it('should recv IPv6 data (String)', function(done) {
@@ -88,7 +88,7 @@ describe('UDP in Node', function() {
     });
 
     it('should recv IPv6 data (base64)', function(done) {
-        checkRecv('base64', 'udp6', 'hello', Buffer('hello').toString('base64'), done);
+        checkRecv('base64', 'udp6', 'hello', Buffer.from('hello').toString('base64'), done);
     });
 
 });

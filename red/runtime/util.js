@@ -42,7 +42,7 @@ function ensureBuffer(o) {
     } else if (typeof o !== "string") {
         o = ""+o;
     }
-    return new Buffer(o);
+    return new Buffer.from(o);
 }
 
 function cloneMessage(msg) {
