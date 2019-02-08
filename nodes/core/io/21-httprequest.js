@@ -78,6 +78,7 @@ module.exports = function(RED) {
             }
             var opts = {};
             opts.url = url;
+            opts.formData = {};
             opts.timeout = node.reqTimeout;
             opts.method = method;
             opts.headers = {};
@@ -144,28 +145,33 @@ module.exports = function(RED) {
             var payload = null;
 
             if (method !== 'GET' && method !== 'HEAD' && typeof msg.payload !== "undefined") {
-                if (typeof msg.payload === "string" || Buffer.isBuffer(msg.payload)) {
-                    payload = msg.payload;
-                } else if (typeof msg.payload == "number") {
-                    payload = msg.payload+"";
+                if (opts.headers['content-type'] == 'multipart/form-data') {
+                    opts.formData = msg.payload;
                 } else {
-                    if (opts.headers['content-type'] == 'application/x-www-form-urlencoded') {
-                        payload = querystring.stringify(msg.payload);
+                    if (typeof msg.payload === "string" || Buffer.isBuffer(msg.payload)) {
+                        payload = msg.payload;
+                    } else if (typeof msg.payload == "number") {
+                        payload = msg.payload+"";
                     } else {
-                        payload = JSON.stringify(msg.payload);
-                        if (opts.headers['content-type'] == null) {
-                            opts.headers[ctSet] = "application/json";
+                        if (opts.headers['content-type'] == 'application/x-www-form-urlencoded') {
+                            payload = querystring.stringify(msg.payload);
+                        } else {
+                            payload = JSON.stringify(msg.payload);
+                            if (opts.headers['content-type'] == null) {
+                                opts.headers[ctSet] = "application/json";
+                            }
                         }
                     }
-                }
-                if (opts.headers['content-length'] == null) {
-                    if (Buffer.isBuffer(payload)) {
-                        opts.headers[clSet] = payload.length;
-                    } else {
-                        opts.headers[clSet] = Buffer.byteLength(payload);
+                    if (opts.headers['content-length'] == null) {
+                        if (Buffer.isBuffer(payload)) {
+                            opts.headers[clSet] = payload.length;
+                        } else {
+                            opts.headers[clSet] = Buffer.byteLength(payload);
+                        }
                     }
-                }
-                opts.body = payload;
+                    opts.body = payload;
+            }
+
             }
             // revert to user supplied Capitalisation if needed.
             if (opts.headers.hasOwnProperty('content-type') && (ctSet !== 'content-type')) {
@@ -198,7 +204,7 @@ module.exports = function(RED) {
                     opts.rejectUnauthorized = msg.rejectUnauthorized;
                 }
             }
-            request(opts, function(err, res, body) {
+            var req = request(opts, function(err, res, body) {
                 if(err){
                     if(err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT') {
                         node.error(RED._("common.notification.errors.no-response"), msg);
@@ -211,6 +217,7 @@ module.exports = function(RED) {
                     msg.statusCode = err.code;
                     node.send(msg);
                 }else{
+                    // handling the response from the request (output)
                     msg.statusCode = res.statusCode;
                     msg.headers = res.headers;
                     msg.responseUrl = res.request.uri.href;
@@ -250,9 +257,20 @@ module.exports = function(RED) {
                         }
                     }
                     node.status({});
-                    node.send(msg);
+                    node.send(msg); // where the output gets returned from the node
                 }
             });
+            /*
+            if (opts.headers['content-type'] == 'multipart/form-data') {
+                var form = req.form();
+                for (var i in msg.payload) {
+                  if (msg.payload[i] && msg.payload[i].value && Buffer.isBuffer(msg.payload[i].value))
+                    form.append(i, msg.payload[i].value, msg.payload[i].options || {});
+                  else
+                    form.append(i, msg.payload[i]);
+                }
+              }
+              */
         });
 
         this.on("close",function() {
