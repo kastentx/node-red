@@ -260,17 +260,6 @@ module.exports = function(RED) {
                     node.send(msg); // where the output gets returned from the node
                 }
             });
-            /*
-            if (opts.headers['content-type'] == 'multipart/form-data') {
-                var form = req.form();
-                for (var i in msg.payload) {
-                  if (msg.payload[i] && msg.payload[i].value && Buffer.isBuffer(msg.payload[i].value))
-                    form.append(i, msg.payload[i].value, msg.payload[i].options || {});
-                  else
-                    form.append(i, msg.payload[i]);
-                }
-              }
-              */
         });
 
         this.on("close",function() {
