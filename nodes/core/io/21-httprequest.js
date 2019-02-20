@@ -145,9 +145,8 @@ module.exports = function(RED) {
             var payload = null;
 
             if (method !== 'GET' && method !== 'HEAD' && typeof msg.payload !== "undefined") {
-                if (opts.headers['content-type'] == 'multipart/form-data') {
+                if (opts.headers['content-type'] == 'multipart/form-data' && !(typeof msg.payload === "string" || Buffer.isBuffer(msg.payload))) {
                     opts.formData = msg.payload;
-                    //console.log(msg.payload);
                 } else {
                     if (typeof msg.payload === "string" || Buffer.isBuffer(msg.payload)) {
                         payload = msg.payload;
@@ -205,7 +204,7 @@ module.exports = function(RED) {
                     opts.rejectUnauthorized = msg.rejectUnauthorized;
                 }
             }
-            var req = request(opts, function(err, res, body) {
+            request(opts, function(err, res, body) {
                 if(err){
                     if(err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT') {
                         node.error(RED._("common.notification.errors.no-response"), msg);
@@ -218,7 +217,6 @@ module.exports = function(RED) {
                     msg.statusCode = err.code;
                     node.send(msg);
                 }else{
-                    // handling the response from the request (output)
                     msg.statusCode = res.statusCode;
                     msg.headers = res.headers;
                     msg.responseUrl = res.request.uri.href;
@@ -258,7 +256,7 @@ module.exports = function(RED) {
                         }
                     }
                     node.status({});
-                    node.send(msg); // where the output gets returned from the node
+                    node.send(msg);
                 }
             });
         });
