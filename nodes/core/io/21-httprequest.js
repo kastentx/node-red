@@ -145,7 +145,7 @@ module.exports = function(RED) {
             var payload = null;
 
             if (method !== 'GET' && method !== 'HEAD' && typeof msg.payload !== "undefined") {
-                if (opts.headers['content-type'] == 'multipart/form-data' && !(typeof msg.payload === "string" || Buffer.isBuffer(msg.payload))) {
+                if (opts.headers['content-type'] == 'multipart/form-data' && typeof payload === "object") {
                     opts.formData = msg.payload;
                 } else {
                     if (typeof msg.payload === "string" || Buffer.isBuffer(msg.payload)) {
